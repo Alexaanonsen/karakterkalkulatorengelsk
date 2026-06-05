@@ -1,0 +1,172 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .section-title { font-size: 14px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .slider-label { font-size: 13px; color: var(--color-text-primary); min-width: 180px; }
+  .slider-wrap { flex: 1; position: relative; }
+  .zone-labels { display: flex; font-size: 10px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .zone-labels span { flex: 1; text-align: center; }
+  .track-container { position: relative; height: 24px; display: flex; align-items: center; }
+  .track-bg { position: absolute; left: 0; right: 0; height: 6px; border-radius: 3px; display: flex; overflow: hidden; pointer-events: none; z-index: 0; }
+  .zone-low  { flex: 33; background: #F7C1C1; }
+  .zone-mid  { flex: 33; background: #FAC775; border-left: 2px solid var(--color-background-primary); border-right: 2px solid var(--color-background-primary); }
+  .zone-high { flex: 34; background: #C0DD97; }
+  input[type=range] { position: absolute; left: 0; right: 0; width: 100%; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; background: transparent; cursor: pointer; z-index: 2; height: 24px; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; background: transparent; }
+  input[type=range]::-moz-range-track { height: 6px; background: transparent; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #111; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.4); margin-top: -6px; cursor: pointer; }
+  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #111; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.4); cursor: pointer; }
+  .slider-val { font-size: 13px; font-weight: 500; min-width: 36px; text-align: right; color: var(--color-text-primary); }
+
+  .grade-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+  .grade-btn {
+    font-size: 13px; padding: 5px 10px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    cursor: pointer; min-width: 40px; text-align: center;
+    transition: background 0.1s, transform 0.1s;
+  }
+  .grade-btn:hover { background: var(--color-background-secondary); }
+  .grade-btn.active {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+    font-weight: 600;
+    transform: scale(1.12);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  }
+
+  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
+  .metric-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .final-card { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+  .final-label { font-size: 14px; color: var(--color-text-info); font-weight: 500; }
+  .final-grades { display: flex; align-items: baseline; gap: 10px; }
+  .final-val { font-size: 36px; font-weight: 500; color: var(--color-text-info); }
+  .final-sub { font-size: 14px; color: var(--color-text-info); opacity: 0.75; }
+</style>
+
+<div style="padding: 1rem 0;">
+
+<div class="section">
+  <div class="section-title">Del 1 og 2 — lytting og lesing (teller 1/3)</div>
+  <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px;">Velg karakter:</div>
+  <div class="grade-buttons" id="grade-btns"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Del 3 — videreformidling (vektes 1/4 av innholdsdelen)</div>
+  <div class="slider-row"><div class="slider-label">Relevant innhold</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d3_innhold" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d3_innhold_v">—</div></div>
+  <div class="slider-row"><div class="slider-label">Språk, grammatikk og tegnsetting</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d3_spraak" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d3_spraak_v">—</div></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Del 4 — samhandling (vektes 1/4 av innholdsdelen)</div>
+  <div class="slider-row"><div class="slider-label">Relevant innhold</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d4_innhold" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d4_innhold_v">—</div></div>
+  <div class="slider-row"><div class="slider-label">Språk, grammatikk og tegnsetting</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d4_spraak" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d4_spraak_v">—</div></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Del 5 — skriving (vektes 1/2 av innholdsdelen)</div>
+  <div class="slider-row"><div class="slider-label">Relevant innhold</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d5_innhold" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d5_innhold_v">—</div></div>
+  <div class="slider-row"><div class="slider-label">Språk, grammatikk og tegnsetting</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d5_spraak" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d5_spraak_v">—</div></div>
+  <div class="slider-row"><div class="slider-label">Struktur</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="d5_struktur" oninput="sync(this);calc()"></div></div><div class="slider-val" id="d5_struktur_v">—</div></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Helhetsvurdering del 3, 4 og 5 (teller 1/3)</div>
+  <div class="slider-row"><div class="slider-label">Samlet helhetsvurdering</div><div class="slider-wrap"><div class="zone-labels"><span>Lav (1–2)</span><span>Middels (3–4)</span><span>Høy (5–6)</span></div><div class="track-container"><div class="track-bg"><div class="zone-low"></div><div class="zone-mid"></div><div class="zone-high"></div></div><input type="range" min="0" max="15" step="1" value="7" id="helhet" oninput="sync(this);calc()"></div></div><div class="slider-val" id="helhet_v">—</div></div>
+</div>
+
+<div class="result-grid">
+  <div class="metric"><div class="metric-label">Del 1+2 (1/3)</div><div class="metric-val" id="r_del12">—</div></div>
+  <div class="metric"><div class="metric-label">Innhold 3-5 (1/3)</div><div class="metric-val" id="r_innhold">—</div></div>
+  <div class="metric"><div class="metric-label">Helhet 3-5 (1/3)</div><div class="metric-val" id="r_helhet">—</div></div>
+</div>
+
+<div class="final-card">
+  <div class="final-label">Samlet karakter</div>
+  <div class="final-grades">
+    <div class="final-val" id="r_final">—</div>
+    <div class="final-sub" id="r_final_raw"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const gradeSteps = [
+  { label: '1',  value: 1.0 },
+  { label: '1+', value: 1.33 },
+  { label: '2−', value: 1.67 },
+  { label: '2',  value: 2.0 },
+  { label: '2+', value: 2.33 },
+  { label: '3−', value: 2.67 },
+  { label: '3',  value: 3.0 },
+  { label: '3+', value: 3.33 },
+  { label: '4−', value: 3.67 },
+  { label: '4',  value: 4.0 },
+  { label: '4+', value: 4.33 },
+  { label: '5−', value: 4.67 },
+  { label: '5',  value: 5.0 },
+  { label: '5+', value: 5.33 },
+  { label: '6−', value: 5.67 },
+  { label: '6',  value: 6.0 },
+];
+
+function idxToGrade(i) { return gradeSteps[i].value; }
+function idxToLabel(i) { return gradeSteps[i].label; }
+function valueToLabel(v) {
+  let best = gradeSteps[0], minD = Math.abs(v - gradeSteps[0].value);
+  for (let i = 1; i < gradeSteps.length; i++) {
+    const d = Math.abs(v - gradeSteps[i].value);
+    if (d < minD) { minD = d; best = gradeSteps[i]; }
+  }
+  return best.label;
+}
+function sync(el) { document.getElementById(el.id + '_v').textContent = idxToLabel(parseInt(el.value)); }
+function getVal(id) { return idxToGrade(parseInt(document.getElementById(id).value)); }
+
+let selectedGrade = null;
+const container = document.getElementById('grade-btns');
+gradeSteps.forEach(g => {
+  const btn = document.createElement('button');
+  btn.className = 'grade-btn';
+  btn.textContent = g.label;
+  btn.onclick = () => {
+    selectedGrade = g.value;
+    document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    calc();
+  };
+  container.appendChild(btn);
+});
+
+function calc() {
+  const d3i = getVal('d3_innhold'), d3s = getVal('d3_spraak');
+  const d4i = getVal('d4_innhold'), d4s = getVal('d4_spraak');
+  const d5i = getVal('d5_innhold'), d5s = getVal('d5_spraak'), d5st = getVal('d5_struktur');
+  const hel = getVal('helhet');
+  const innholdWeighted = ((d3i+d3s)/2)*0.25 + ((d4i+d4s)/2)*0.25 + ((d5i+d5s+d5st)/3)*0.5;
+  document.getElementById('r_innhold').textContent = valueToLabel(innholdWeighted);
+  document.getElementById('r_helhet').textContent = valueToLabel(hel);
+  if (selectedGrade === null) {
+    document.getElementById('r_del12').textContent = '—';
+    document.getElementById('r_final').textContent = '—';
+    document.getElementById('r_final_raw').textContent = '';
+    return;
+  }
+  document.getElementById('r_del12').textContent = valueToLabel(selectedGrade);
+  const total = (selectedGrade + innholdWeighted + hel) / 3;
+  document.getElementById('r_final').textContent = valueToLabel(total);
+  document.getElementById('r_final_raw').textContent = '(' + total.toFixed(2) + ')';
+}
+
+document.querySelectorAll('input[type=range]').forEach(el => sync(el));
+calc();
+</script>
